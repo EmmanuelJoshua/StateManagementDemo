@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -18,25 +19,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
-    startTimer();
+//    startTimer();
     super.initState();
   }
 
-  startTimer() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      themeProvide = Provider.of<ThemeProvider>(context, listen: false);
-      if (themeProvide.time == 0) {
-        _controller..forward();
-      } else {
-        themeProvide.decrementTime();
-      }
-    });
-  }
+//  startTimer() {
+//    Timer.periodic(Duration(seconds: 1), (timer) {
+//      themeProvide = Provider.of<ThemeProvider>(context, listen: false);
+//      if (themeProvide.time == 0) {
+//        _controller..forward();
+//      } else {
+//        themeProvide.decrementTime();
+//      }
+//    });
+//  }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Center(
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return Scaffold(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -50,29 +53,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               height: 30,
             ),
             Consumer<ThemeProvider>(
-              builder: (context, data, child) {
-                return Text(
-                  'Timer: ${data.time}',
-                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 25),
-                );
-              },
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            MaterialButton(
-              color: Colors.black,
-              child: Text(
-                'Reset',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () {
-                _controller..forward();
-                if (_controller.isCompleted) {
-                  _controller.reverse();
-                }
-                themeProvide.setTime = 60;
-                startTimer();
+              builder: (context, mode, widget) {
+                return CupertinoSwitch(
+                    value: mode.getMode,
+                    trackColor:Color(0xFFAFAFA),
+                    activeColor: Color(0xFFF1F1F1),
+                    onChanged: (value) {
+                      themeProvider.setMode = value;
+                      _controller..reset();
+                        _controller..forward();
+                    });
               },
             )
           ],
